@@ -39,10 +39,10 @@
 
 <body class="bg-gray-300 md:h-screen w-screen overflow-x-hidden pt-2 px-1 text-gray-900">
     <nav>
-        <h1 class="text-xl mb-10 md:text-3xl text-black text-center font-black">Casino Verifier</h1>
+        <h1 class="text-xl mb-3 md:text-3xl text-black text-center font-black">Casino Verifier</h1>
     </nav>
     <main class="w-full mt-8 md:mt-1 w-full px-4" id="app">
-        <div class="flex w-full md:w-2/5 flex-auto mx-auto content-center content-around mb-2">
+        <div class="grid w-full md:w-2/5 mx-auto content-center content-around mb-2">
             <div class=" w-full">
                 <label>Type: 
                     <select name="" id="type">
@@ -58,10 +58,13 @@
                     Verify
                 </button>
             </div>
+            <label>
+                <p class="block text-2xl">Results</p>
+                <textarea class="mx-auto" name="" id="results" cols="40" rows="5"></textarea>
+            </label>
         </div>
         <!-- <div id="results" class="bg-white rounded">
         </div> -->
-        <textarea name="" id="results" cols="30" rows="5"></textarea>
     </main>
     <script>
         function parseQS () {
