@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Casino Rolls Verifier">
+    <meta name="keywords" content="Verifier">
+    <meta name="author" content="Matthew Wisdom">
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" />
+    <!-- <link href="/static/css/fontawesome.css" rel="stylesheet">
+    <link href="/static/css/brands.css" rel="stylesheet">
+    <link href="/static/css/solid.css" rel="stylesheet"> -->
+    <!-- <script src='/static/js/nprogress.js'></script>
+    <link rel='stylesheet' href='/static/css/nprogress.css'/> -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel='stylesheet' href='https://unpkg.com/nprogress@0.2.0/nprogress.css'/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <!-- <script src="/static/js/vue.global.js"></script> -->
+    <title>Casino Verifier</title>
+    <style>
+        label {
+            display: block;
+            margin-top: 1em;
+        }
+        input {
+            width: 100%;
+            height: 2.9em;
+            background-color: "#ffffff0a";
+            color: black;
+            display: block;
+            margin-top: 0.3em;
+            padding-left: 5px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-300 md:h-screen w-screen overflow-x-hidden pt-2 px-1 text-gray-900">
+    <nav>
+        <h1 class="text-xl mb-10 md:text-3xl text-black text-center font-black">Casino Verifier</h1>
+    </nav>
+    <main class="w-full mt-8 md:mt-1 w-full px-4" id="app">
+        <div class="flex w-full md:w-2/5 flex-auto mx-auto content-center content-around mb-2">
+            <div class=" w-full">
+                <label>Type: 
+                    <select name="" id="type">
+                        <option value="dd" selected>Dice Duel</option>
+                        <option value=""></option>
+                    </select>
+                </label>
+                <label>Client Seed: <input type="text" id="cs"></label>
+                <label>Server Seed: <input type="text" id="ss"></label>
+                <label>Server Seed Hashed: <input type="text" id="ssh"></label>
+                <label>Nonce: <input type="text" id="nonce" ></label>
+                <button onclick="verify()" class="mt-5 rounded bg-gray-500 px-6 py-3 font-bold text-white hover:bg-gray-100 hover:text-black">
+                    Verify
+                </button>
+            </div>
+        </div>
+        <!-- <div id="results" class="bg-white rounded">
+        </div> -->
+        <textarea name="" id="results" cols="30" rows="5"></textarea>
+    </main>
+    <script>
+        function parseQS () {
+            var q = {}
+            var query = window.location.search.substring(1)
+            var vars = query.split('&')
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split('=')
+                q[pair[0]] = pair[1]
+            }
+            return q
+        }
+        
+        var qs = parseQS()
+        var trustedArgs = ['cs', 'ss', 'nonce']
+        
+        for (var i = 0; i < trustedArgs.length; i++) {
+            var arg = trustedArgs[i]
+            if (arg in qs) { console.log(arg);document.getElementById(arg).value = qs[arg] }
+        }
+        
+        function ord(i) {
+            var j = i % 10;
+            var k = i % 100;
+        
+            if (j == 1 && k != 11) { return i + "st"; }
+            if (j == 2 && k != 12) { return i + "nd"; }
+            if (j == 3 && k != 13) { return i + "rd"; }
+        
+            return i + "th";
+        };
+        function verifyDD() {
+            var clientSeed = document.querySelector('#cs').value
+            var serverSeed = document.querySelector('#ss').value
+            var nonce = document.querySelector('#nonce').value
+            var serverSeedHashed = CryptoJS.SHA256(serverSeed).toString(CryptoJS.enc.Hex)
+            document.querySelector('#ssh').value = serverSeedHashed
+            var data = new Array()
+            var i = 0
+            while (i <= nonce-1) {
+                var hash = CryptoJS.HmacSHA512(i + ':' + clientSeed, serverSeed).toString(CryptoJS.enc.Hex)
+        
+                again: while (true) {
+                    var left5 = hash.substring(5, 0)
+                    var base = parseInt(left5, 16)
+                    var hmac = hash.substr(5, hash.lenght)
+                    var hash = hmac
+        
+                    if (base >= 1048572) { continue again }
+        
+                    break
+                }
+            
+                var dice1 = Math.floor(1 + (base / (29127 * 6)))
+                var dice2 = 1 + (base % 6)
+                var dice = dice1 + dice2
+                
+                var d_dice = ord(i) + ' = ' + dice + ' (' + dice1 + ' + ' + dice2 + ')'
+                
+                data.push(d_dice)
+        
+                i++
+            }
+        
+            var results = data.toString().replace(/,/g, "\n");
+            document.querySelector("#results").innerHTML = results
+            console.log((results))
+            
+          }
+        function verify(){
+            let type =  document.querySelector("#type").value
+            switch (type) {
+                case 'dd':
+                verifyDD();
+                break;
+            }
+        }
+    </script>
+      
+</body>
+</html>
+
