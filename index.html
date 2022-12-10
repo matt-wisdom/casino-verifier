@@ -45,7 +45,7 @@
                 <label>Client Seed: <input type="text" id="cs"></label>
                 <label>Server Seed: <input type="text" id="ss"></label>
                 <label>Server Seed Hashed: <input type="text" id="ssh"></label>
-                <label>Nonce: <input type="text" id="nonce" ></label>
+                <label>Rolls/Nonce: <input type="text" id="nonce" ></label>
                 <button onclick="verify()" class="mt-5 rounded bg-gray-500 px-6 py-3 font-bold text-white hover:bg-gray-100 hover:text-black">
                     Verify
                 </button>
@@ -92,36 +92,40 @@
         function verifyDD() {
             var clientSeed = document.querySelector('#cs').value
             var serverSeed = document.querySelector('#ss').value
-            var nonce = document.querySelector('#nonce').value
+            var nonce = parseInt(document.querySelector('#nonce').value)
+            if (nonce%2 == 1){
+                nonce = nonce + 1
+            }
             var serverSeedHashed = CryptoJS.SHA256(serverSeed).toString(CryptoJS.enc.Hex)
             document.querySelector('#ssh').value = serverSeedHashed
             var data = new Array()
             var i = 0
             while (i <= nonce-1) {
-                var hash = CryptoJS.HmacSHA512(i + ':' + clientSeed, serverSeed).toString(CryptoJS.enc.Hex)
-                console.log(hash)
-                again: while (true) {
-                    var left5 = hash.substring(5, 0)
-                    var base = parseInt(left5, 16)
-                    var hmac = hash.substr(5, hash.lenght)
-                    var hash = hmac
-                    console.log(base)
-                    if (base >= 1048572) { continue again }
-        
-                    break
+                let round = []
+                for (var m =i; m<i+2; m++){
+                    var hash = CryptoJS.HmacSHA512(m + ':' + clientSeed, serverSeed).toString(CryptoJS.enc.Hex)
+                    console.log(hash)
+                    again: while (true) {
+                        var left5 = hash.substring(5, 0)
+                        var base = parseInt(left5, 16)
+                        var hmac = hash.substr(5, hash.lenght)
+                        var hash = hmac
+                        console.log(base)
+                        if (base >= 1048572) { continue again }
+            
+                        break
+                    }
+                    dice = base % (10000) / 100
+                    var dice = Math.floor(1 + (dice%6))
+                    round.push(dice)
                 }
-                dice1 = base % (10000) / 100
-                var dice1 = Math.floor(1 + (dice1%6))
-                // var dice2 = 1 + (base % 5)
-                // var dice = dice1 + dice2
-                
-                // var d_dice = ord(i) + ' = ' + dice + ' (' + dice1 + ' + ' + dice2 + ')'
-                
-                data.push(dice1)
-        
-                i++
+                var val = round[0] + round[1]
+                var d_dice = val + ' = ' + dice + ' (' + round[0] + ' + ' + round[1] + ')'
+                data.push(d_dice)
+                i = i + 2
+
             }
-        
+            
             var results = data.toString().replace(/,/g, "\n");
             document.querySelector("#results").innerHTML = results
             console.log((results))
