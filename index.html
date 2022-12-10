@@ -99,25 +99,25 @@
             var i = 0
             while (i <= nonce-1) {
                 var hash = CryptoJS.HmacSHA512(i + ':' + clientSeed, serverSeed).toString(CryptoJS.enc.Hex)
-        
+                console.log(hash)
                 again: while (true) {
                     var left5 = hash.substring(5, 0)
                     var base = parseInt(left5, 16)
                     var hmac = hash.substr(5, hash.lenght)
                     var hash = hmac
-        
+                    console.log(base)
                     if (base >= 1048572) { continue again }
         
                     break
                 }
-            
-                var dice1 = Math.floor(1 + (base / (29127 * 6)))
-                var dice2 = 1 + (base % 6)
-                var dice = dice1 + dice2
+                dice1 = base % (10000) / 100
+                var dice1 = Math.floor(1 + (dice1%6))
+                // var dice2 = 1 + (base % 5)
+                // var dice = dice1 + dice2
                 
-                var d_dice = ord(i) + ' = ' + dice + ' (' + dice1 + ' + ' + dice2 + ')'
+                // var d_dice = ord(i) + ' = ' + dice + ' (' + dice1 + ' + ' + dice2 + ')'
                 
-                data.push(d_dice)
+                data.push(dice1)
         
                 i++
             }
