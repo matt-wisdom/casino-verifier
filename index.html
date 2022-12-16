@@ -34,9 +34,9 @@
         <div class="grid w-full md:w-2/5 mx-auto content-center content-around mb-2">
             <div class=" w-full">
                 <label>Type: 
-                    <select name="" id="type">
+                    <select name="" id="type_">
                         <option value="dd" selected>Dice Duel</option>
-                        <option value=""></option>
+                        <option value="normal">100 Roll</option>
                     </select>
                 </label>
                 <label>Client Seed: <input type="text" id="cs"></label>
@@ -69,7 +69,7 @@
         }
         
         var qs = parseQS()
-        var trustedArgs = ['cs', 'ss', 'nonce']
+        var trustedArgs = ['cs', 'ss', 'nonce', 'type_']
         
         for (var i = 0; i < trustedArgs.length; i++) {
             var arg = trustedArgs[i]
@@ -113,6 +113,7 @@
                         break
                     }
                     dice = base % (10000) / 100
+                    
                     var dice = Math.floor(1 + (dice%6))
                     round.push(dice)
                 }
@@ -128,12 +129,48 @@
             console.log((results))
             
           }
+        function verifyNormal(){
+            var clientSeed = document.querySelector('#cs').value
+            var serverSeed = document.querySelector('#ss').value
+            var nonce = parseInt(document.querySelector('#nonce').value)
+            if (nonce%2 == 1){
+                nonce = nonce + 1
+            }
+            var serverSeedHashed = CryptoJS.SHA256(serverSeed).toString(CryptoJS.enc.Hex)
+            document.querySelector('#ssh').value = serverSeedHashed
+            var data = new Array()
+            var i = 0
+            while (i <= nonce-1) {
+                var hash = CryptoJS.HmacSHA512(i + ':' + clientSeed, serverSeed).toString(CryptoJS.enc.Hex)
+                console.log(hash)
+                again: while (true) {
+                    var left5 = hash.substring(5, 0)
+                    var base = parseInt(left5, 16)
+                    var hmac = hash.substr(5, hash.lenght)
+                    var hash = hmac
+                    console.log(base)
+                    if (base >= 1048572) { continue again }
+
+                    break
+                }
+                dice = base % (10000) / 100
+                var d_dice = dice
+                data.push(d_dice)
+                i += 1
+            }
+            var results = data.toString().replace(/,/g, "\n");
+            document.querySelector("#results").innerHTML = results
+            console.log((results))
+        }
         function verify(){
-            let type =  document.querySelector("#type").value
+            let type =  document.querySelector("#type_").value
             switch (type) {
                 case 'dd':
-                verifyDD();
-                break;
+                    verifyDD();
+                    break;
+                case 'normal':
+                    verifyNormal();
+                    break;
             }
         }
     </script>
