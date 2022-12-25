@@ -201,18 +201,18 @@
 
                     break
                 }
-                dice = ((base % (10000) / 100) % (52))
+                dice = ((base % (10000) / 100) % (52));
                 
-                var d_dice = Math.floor(dice)
-                data.push(cards[d_dice])
-                i += 1
+                var d_dice = Math.floor(dice);
+                data.push(cards[d_dice]);
+                i += 1;
             }
-            var dealer = data.slice(0, 2)
-            var player = data.slice(2)
+            var dealer = data.slice(0, 2);
+            var player = data.slice(2);
             var deal = "Dealer Cards: " + dealer.toString().replace(/,/g, "\n");
-            var play = "Player Cards: \n"player.toString().replace(/,/g, "\n");
-            document.querySelector("#results").innerHTML = deal + "\n" + play
-            console.log((results))
+            var play = "Player Cards: \n" + player.toString().replace(/,/g, "\n");
+            document.querySelector("#results").innerHTML = deal + "\n" + play;
+            console.log((results));
         }
     </script>
       
