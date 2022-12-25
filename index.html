@@ -210,8 +210,8 @@
             }
             var dealer = data.slice(0, 2);
             var player = data.slice(2);
-            var deal = "\nDealer Cards: \n" + dealer.toString().replace(/,/g, "|");
-            var play = "\n\nPlayer Cards: \n" + player.toString().replace(/,/g, "|");
+            var deal = "Dealer Cards: \n" + dealer.toString().replace(/,/g, "  |  ");
+            var play = "\n\nPlayer Cards: \n" + player.toString().replace(/,/g, "  |  ");
             document.querySelector("#results").innerHTML = deal + "\n" + play;
             console.log((results));
         }
