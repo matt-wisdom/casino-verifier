@@ -168,10 +168,7 @@
         function verifyRoulette(){
             var clientSeed = document.querySelector('#cs').value
             var serverSeed = document.querySelector('#ss').value
-            var nonce = parseInt(document.querySelector('#nonce').value)
-            if (nonce%2 == 1){
-                nonce = nonce + 1
-            }
+            var nonce = 1//parseInt(document.querySelector('#nonce').value)
             var serverSeedHashed = CryptoJS.SHA256(serverSeed).toString(CryptoJS.enc.Hex)
             document.querySelector('#ssh').value = serverSeedHashed
             var data = new Array()
