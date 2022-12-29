@@ -38,6 +38,7 @@
                         <option value="dd" selected>Dice Duel</option>
                         <option value="normal">100 Roll</option>
                         <option value="black">BlackJack</option>
+                        <option value="roulette">Roulette</option>
                     </select>
                 </label>
                 <label>Client Seed: <input type="text" id="cs"></label>
@@ -163,6 +164,42 @@
             document.querySelector("#results").innerHTML = results
             console.log((results))
         }
+        
+        function verifyRoulette(){
+            var clientSeed = document.querySelector('#cs').value
+            var serverSeed = document.querySelector('#ss').value
+            var nonce = parseInt(document.querySelector('#nonce').value)
+            if (nonce%2 == 1){
+                nonce = nonce + 1
+            }
+            var serverSeedHashed = CryptoJS.SHA256(serverSeed).toString(CryptoJS.enc.Hex)
+            document.querySelector('#ssh').value = serverSeedHashed
+            var data = new Array()
+            var i = 0
+            while (i <= nonce-1) {
+                var hash = CryptoJS.HmacSHA512(i + ':' + clientSeed, serverSeed).toString(CryptoJS.enc.Hex)
+                console.log(hash)
+                again: while (true) {
+                    var left5 = hash.substring(5, 0)
+                    var base = parseInt(left5, 16)
+                    var hmac = hash.substr(5, hash.lenght)
+                    var hash = hmac
+                    console.log(base)
+                    if (base >= 1048572) { continue again }
+
+                    break
+                }
+                dice = base % (10000) / 100
+                dice = dice % (37)
+                var d_dice = Math.floor(dice)
+                data.push(d_dice)
+                i += 1
+            }
+            var results = data.toString().replace(/,/g, "\n");
+            document.querySelector("#results").innerHTML = results
+            console.log((results))
+        }
+        
         function verify(){
             let type =  document.querySelector("#type_").value
             switch (type) {
@@ -175,6 +212,8 @@
                 case 'black':
                     verifyBlackJack();
                     break;
+                case 'roulette':
+                    verifyRoulette()
             }
         }
         const cards = ['K♠', 'K♥', 'K♣', 'K♦', 'Q♠', 'Q♥', 'Q♣', 'Q♦', 'J♠', 'J♥', 'J♣', 'J♦', '10♠', '10♥', '10♣', '10♦', '9♠', '9♥', '9♣', '9♦', '8♠', '8♥', '8♣', '8♦', '7♠', '7♥', '7♣', '7♦', '6♠', '6♥', '6♣', '6♦', '5♠', '5♥', '5♣', '5♦', '4♠', '4♥', '4♣', '4♦', '3♠', '3♥', '3♣', '3♦', '2♠', '2♥', '2♣', '2♦', 'A♠', 'A♥', 'A♣', 'A♦'] ;
