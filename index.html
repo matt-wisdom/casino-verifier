@@ -187,10 +187,10 @@
                     break
                 }
                 dice = base % (10000) / 100
-                dice = dice % (38)
+                dice = dice % (39)
           
                 var d_dice = Math.floor(dice)
-                if (d_dice === 37){
+                if (d_dice === 37 || d_dice === 38){
                  d_dice=0
                 }
                 data.push(d_dice)
